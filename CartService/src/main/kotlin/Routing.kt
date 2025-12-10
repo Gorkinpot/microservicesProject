@@ -1,7 +1,7 @@
 package com.example
 
-import com.example.dto.request.OrderPlacingRequest
-import com.example.dto.response.OrderPlacingResponse
+import com.example.dto.request.CartItem
+import com.example.rabbit.RabbitSetup
 import com.example.service.CartService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
@@ -13,14 +13,13 @@ import kotlinx.serialization.json.Json
 fun Application.configureRouting() {
     routing {
         get("/api/cart/placeAnOrder") {
-            val request = call.receive<OrderPlacingRequest>()
+            val request = call.receive<CartItem>()
 
             val json = Json.encodeToString(request)
             val message = json.toByteArray()
 
             CartService.publishToRabbit(message)
-
-            call.respond(HttpStatusCode.OK, OrderPlacingResponse("Booking is initiated!"))
+            RabbitSetup.startConsumerFromDocuments(call)
         }
     }
 }

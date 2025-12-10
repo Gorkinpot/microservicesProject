@@ -9,6 +9,8 @@ fun initUtils() {
     transaction {
         exec("DROP TABLE IF EXISTS \"user\" CASCADE")
 
+        SchemaUtils.drop(CartItem)
+
         SchemaUtils.create(
             User,
             Room,

@@ -8,7 +8,7 @@ object CartService {
         channel.basicPublish(
             body = message,
             exchange = "PlaceAnOrderExchange",
-            routingKey = ""
+            routingKey = "documents.check"
         )
     }
 }

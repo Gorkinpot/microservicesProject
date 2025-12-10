@@ -1,21 +1,24 @@
 package com.example.rabbit
 
-import com.example.database.CartItem
 import com.example.database.insertToCart
 import com.example.dto.request.CartItemRequestFromRabbit
+import com.example.dto.response.DocumentExistenceResponse
+import com.example.dto.response.OrderPlacingResponse
 import dev.kourier.amqp.BuiltinExchangeType
 import dev.kourier.amqp.channel.AMQPChannel
 import dev.kourier.amqp.connection.AMQPConnection
 import dev.kourier.amqp.connection.amqpConfig
 import dev.kourier.amqp.connection.createAMQPConnection
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.response.respond
+import io.ktor.server.routing.RoutingCall
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object RabbitSetup {
     lateinit var connection: AMQPConnection
-    lateinit var consumerChannel: AMQPChannel
+    lateinit var consumerChannelFromUser: AMQPChannel
+    lateinit var consumerChannelFromDocuments: AMQPChannel
     lateinit var producerChannel: AMQPChannel
 
     val config = amqpConfig {
@@ -29,48 +32,55 @@ object RabbitSetup {
 
     suspend fun init(coroutineScope: CoroutineScope) {
         connection = createAMQPConnection(coroutineScope, config)
-        consumerChannel = connection.openChannel()
+        consumerChannelFromUser = connection.openChannel()
+        consumerChannelFromDocuments = connection.openChannel()
         producerChannel = connection.openChannel()
 
-        consumerChannel.exchangeDeclare(
+        consumerChannelFromUser.exchangeDeclare(
             name = "RoomSelectedExchange",
             type = BuiltinExchangeType.DIRECT,
             durable = true
         )
 
-        consumerChannel.queueDeclare(
+        consumerChannelFromUser.queueDeclare(
             name = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
             durable = true
         )
 
-        consumerChannel.queueBind(
-            queue = "RoomSelectedQueue",
+        consumerChannelFromUser.queueBind(
+            queue = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
             exchange = "RoomSelectedExchange",
             routingKey = "exampleKey"
         )
 
-        producerChannel.exchangeDeclare(
+        consumerChannelFromDocuments.exchangeDeclare(
             name = "PlaceAnOrderExchange",
-            type = BuiltinExchangeType.FANOUT,
+            type = BuiltinExchangeType.TOPIC,
             durable = true
         )
 
-        producerChannel.queueDeclare(
+        consumerChannelFromDocuments.queueDeclare(
             name = "PlaceAnOrderKomandinAY-ikbo-07-22",
             durable = true,
             exclusive = false,
             autoDelete = false
         )
 
-        producerChannel.queueBind(
+        consumerChannelFromDocuments.queueBind(
             queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
             exchange = "PlaceAnOrderExchange",
-            routingKey = ""
+            routingKey = "documents.documentExistence"
+        )
+
+        producerChannel.exchangeDeclare(
+            name = "PlaceAnOrderExchange",
+            type = BuiltinExchangeType.TOPIC,
+            durable = true
         )
     }
 
     suspend fun startConsumer() {
-        val consumer = consumerChannel.basicConsume(
+        val consumer = consumerChannelFromUser.basicConsume(
             queue = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
             noAck = true,
         )
@@ -83,8 +93,22 @@ object RabbitSetup {
         }
     }
 
+    suspend fun startConsumerFromDocuments(call: RoutingCall) {
+        val consumer = consumerChannelFromDocuments.basicConsume(
+            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
+            noAck = true,
+        )
+
+        for (delivery in consumer) {
+            val message = delivery.message.body.decodeToString()
+            val documentExistenceResponse = Json.decodeFromString<DocumentExistenceResponse>(message)
+
+            call.respond(HttpStatusCode.OK, OrderPlacingResponse("${documentExistenceResponse.isDocumentExisted}"))
+        }
+    }
+
     suspend fun stopConnection() {
         connection.close()
-        consumerChannel.close()
+        consumerChannelFromUser.close()
     }
 }
