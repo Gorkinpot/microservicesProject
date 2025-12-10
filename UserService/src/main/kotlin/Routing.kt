@@ -2,8 +2,11 @@ package com.example
 
 import com.example.Service.UserRepository
 import com.example.Service.UserService
+import com.example.dto.request.AuthRequest
 import com.example.dto.request.RegisterRequest
 import com.example.dto.request.CartItemRequestToRabbit
+import com.example.dto.response.AuthResponse
+import com.example.dto.response.RegisterResponse
 import com.example.rabbit.RabbitSetup
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -14,42 +17,47 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import kotlinx.serialization.json.Json
+import java.util.UUID
+import kotlin.uuid.Uuid
 
 fun Application.roomSelectedEventRouting() {
-    install(ContentNegotiation) {
-        json()
-    }
-
     routing {
         get("/api/user/selectRoom") {
             val request = call.receive<CartItemRequestToRabbit>()
             val json = Json.encodeToString(request)
             val message = json.toByteArray()
 
-            val channel = RabbitSetup.channel
-            channel.basicPublish(
-                body = message,
-                exchange = "RoomSelectedExchange",
-                routingKey = ""
-            )
+            UserService.publishToRabbit(message)
 
-            println("Message sent!")
-
-            call.respondText("Message from server sent!")
-        }
-
-        post("/api/user/register") {
-            try {
-                val request = call.receive<RegisterRequest>()
-                UserService(UserRepository).register(request)
-                call.respond(HttpStatusCode.Created)
-            } catch (e : Exception) {
-                println(e.message)
-            }
+            call.respondText("Room added to cart!")
         }
     }
 }
 
 fun Application.clientRouting(){
+    routing {
+        post("/api/user/register") {
+            try {
+                val request = call.receive<RegisterRequest>()
+                UserService.register(request)
+                call.respond(HttpStatusCode.Created, RegisterResponse("User registered successfully!"))
+            } catch (e : Exception) {
+                println(e.message)
+            }
+        }
 
+        get("/api/user/auth") {
+            try {
+                val request = call.receive<AuthRequest>()
+                val result = AuthResponse(token = UUID.randomUUID().toString())
+                if (UserService.authorize(request) == true) {
+                    call.respond(HttpStatusCode.OK, "User already exists! ${result}")
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "User has not authorized!")
+                }
+            } catch (e : Exception) {
+                println(e.message)
+            }
+        }
+    }
 }

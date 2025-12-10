@@ -35,8 +35,10 @@ object RabbitSetup {
         )
 
         channel.queueDeclare(
-            name = "RoomSelectedQueue",
-            durable = true
+            name = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
+            durable = true,
+            exclusive = true,
+            autoDelete = false
         )
 
         channel.queueBind(
@@ -48,7 +50,7 @@ object RabbitSetup {
 
     suspend fun startConsumer() {
         val consumer = channel.basicConsume(
-            queue = "RoomSelectedQueue",
+            queue = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
             noAck = true,
         )
 
@@ -56,11 +58,15 @@ object RabbitSetup {
             val message = delivery.message.body.decodeToString()
             val cartItemRequest = Json.decodeFromString<CartItemRequestFromRabbit>(message)
 
-            transaction {
-                CartItem.insert {
-                    it[userId] = cartItemRequest.userId
-                    it[roomId] = cartItemRequest.roomId
+            try {
+                transaction {
+                    CartItem.insert {
+                        it[userId] = cartItemRequest.userId
+                        it[roomId] = cartItemRequest.roomId
+                    }
                 }
+            } catch (e: Exception) {
+                println("Ошибка при добавлении в базу: ${e.message}")
             }
         }
     }

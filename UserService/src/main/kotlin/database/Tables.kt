@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.Table
 
 object User : Table("User") {
     val id = integer("id").autoIncrement()
+    val email = varchar("email", 50)
     val username = varchar("username", 50)
     val password = varchar("password", 50)
 

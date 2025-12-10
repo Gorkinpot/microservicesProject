@@ -30,8 +30,10 @@ object RabbitSetup {
         )
 
         channel.queueDeclare(
-            name = "RoomSelectedQueue",
-            durable = true
+            name = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
+            durable = true,
+            exclusive = true,
+            autoDelete = false
         )
 
         channel.queueBind(

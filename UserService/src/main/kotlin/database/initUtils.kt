@@ -7,6 +7,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun initUtils() {
     transaction {
+        exec("DROP TABLE IF EXISTS \"user\" CASCADE")
+
         SchemaUtils.create(
             User,
             Room,
