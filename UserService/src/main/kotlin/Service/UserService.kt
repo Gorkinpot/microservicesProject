@@ -18,7 +18,7 @@ object UserService {
         channel.basicPublish(
             body = message,
             exchange = "RoomSelectedExchange",
-            routingKey = ""
+            routingKey = "exampleKey"
         )
     }
 }

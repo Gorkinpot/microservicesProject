@@ -2,11 +2,17 @@ package com.example
 
 import com.example.database.connectDatabase
 import com.example.rabbit.RabbitSetup
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 fun Application.module() {
+    install(ContentNegotiation) {
+        json()
+    }
+
     connectDatabase()
     configureRouting()
 

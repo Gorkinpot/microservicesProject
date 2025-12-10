@@ -22,25 +22,6 @@ object RabbitSetup {
     suspend fun init(coroutineScope: CoroutineScope) {
         connection = createAMQPConnection(coroutineScope, config)
         channel = connection.openChannel()
-
-        channel.exchangeDeclare(
-            name = "RoomSelectedExchange",
-            type = BuiltinExchangeType.DIRECT,
-            durable = true
-        )
-
-        channel.queueDeclare(
-            name = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
-            durable = true,
-            exclusive = true,
-            autoDelete = false
-        )
-
-        channel.queueBind(
-            queue = "RoomSelectedQueue",
-            exchange = "RoomSelectedExchange",
-            routingKey = ""
-        )
     }
 
     suspend fun stopConnection() {
