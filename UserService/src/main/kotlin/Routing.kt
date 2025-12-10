@@ -3,7 +3,7 @@ package com.example
 import com.example.Service.UserRepository
 import com.example.Service.UserService
 import com.example.dto.request.RegisterRequest
-import com.example.dto.request.CartItemRequest
+import com.example.dto.request.CartItemRequestToRabbit
 import com.example.rabbit.RabbitSetup
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
@@ -22,7 +22,7 @@ fun Application.roomSelectedEventRouting() {
 
     routing {
         get("/api/user/selectRoom") {
-            val request = call.receive<CartItemRequest>()
+            val request = call.receive<CartItemRequestToRabbit>()
             val json = Json.encodeToString(request)
             val message = json.toByteArray()
 
