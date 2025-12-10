@@ -1,0 +1,112 @@
+version: "3"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 3s
+      retries: 5
+      timeout: 5s
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+
+  userservice:
+    image: userservice:latest
+    depends_on:
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  cartservice:
+    image: cartservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8082:8082"
+
+  bookingservice:
+    image: bookingservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8083:8083"
+
+  catalogservice:
+    image: catalogservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8084:8084"
+
+  commentservice:
+    image: commentservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8085:8085"
+
+  documentservice:
+    image: documentservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8086:8086"
+
+  notificationservice:
+    image: notificationservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8087:8087"
+
+  paymentservice:
+    image: paymentservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8088:8088"
+
+  roomservice:
+    image: roomservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8089:8089"
