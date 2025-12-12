@@ -10,7 +10,6 @@ docker build -t bookingservice:latest ./BookingService
 ./gradlew :DocumentService:build -x test
 docker build -t documentservice:latest ./DocumentService
 
-<#
 ./gradlew :CatalogService:build
 docker build -t catalogservice:latest ./CatalogService
 
@@ -25,6 +24,5 @@ docker build -t paymentservice:latest ./PaymentService
 
 ./gradlew :RoomService:build
 docker build -t roomservice:latest ./RoomService
-#>
 
 docker compose up --build
