@@ -95,7 +95,9 @@ object RabbitSetup {
 
         userServiceChannel.queueDeclare(
             name = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
-            durable = true
+            durable = false,
+            exclusive = true,
+            autoDelete = true
         )
 
         userServiceChannel.queueBind(
