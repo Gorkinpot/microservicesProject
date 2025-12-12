@@ -1,7 +1,7 @@
 package com.example.rabbit
 
-import com.example.database.UserDocument
-import com.example.dto.request.OrderPlacingRequestFromRabbit
+import com.example.Service.BookingService
+import com.example.dto.request.BookingRequestFromRabbit
 import dev.kourier.amqp.BuiltinExchangeType
 import dev.kourier.amqp.channel.AMQPChannel
 import dev.kourier.amqp.connection.AMQPConnection
@@ -9,8 +9,6 @@ import dev.kourier.amqp.connection.amqpConfig
 import dev.kourier.amqp.connection.createAMQPConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object RabbitSetup {
     lateinit var connection: AMQPConnection
@@ -29,35 +27,43 @@ object RabbitSetup {
         connection = createAMQPConnection(coroutineScope, config)
         consumerChannel = connection.openChannel()
 
+        declareBookingSetup()
+    }
+
+    suspend fun declareBookingSetup() {
         consumerChannel.exchangeDeclare(
-            name = "PlaceAnOrderExchange",
-            type = BuiltinExchangeType.TOPIC,
+            name = "bookingServiceExchange",
+            type = BuiltinExchangeType.FANOUT,
             durable = true
         )
 
         consumerChannel.queueDeclare(
-            name = "PlaceAnOrderKomandinAY-ikbo-07-22",
-            durable = true,
+            name = "PlaceAnOrderShivilovAY-ikbo-07-22",
+            durable = false,
             exclusive = false,
-            autoDelete = false
+            autoDelete = true
         )
 
         consumerChannel.queueBind(
-            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
-            exchange = "PlaceAnOrderExchange",
-            routingKey = "booking.initialized"
+            queue = "PlaceAnOrderShivilovAY-ikbo-07-22",
+            exchange = "bookingServiceExchange",
+            routingKey = ""
         )
     }
 
     suspend fun startConsumer() {
         val consumer = consumerChannel.basicConsume(
-            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
+            queue = "PlaceAnOrderShivilovAY-ikbo-07-22",
             noAck = true,
         )
 
         for (delivery in consumer) {
             val message = delivery.message.body.decodeToString()
-            val cartItemRequest = Json.decodeFromString<OrderPlacingRequestFromRabbit>(message)
+            val bookingRequest = Json.decodeFromString<BookingRequestFromRabbit>(message)
+
+            println(bookingRequest)
+
+            BookingService.addBookingRequest(bookingRequest)
         }
     }
 

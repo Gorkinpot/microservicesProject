@@ -19,7 +19,7 @@ fun Application.module() {
 
     connectDatabase()
 
-    /*environment.monitor.subscribe(ApplicationStarted) { app ->
+    environment.monitor.subscribe(ApplicationStarted) { app ->
         launch {
             RabbitSetup.init(this)
 
@@ -33,7 +33,7 @@ fun Application.module() {
         launch {
             RabbitSetup.stopConnection()
         }
-    }*/
+    }
 
     configureRouting()
 }

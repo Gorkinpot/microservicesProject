@@ -9,13 +9,14 @@ fun initUtils() {
     transaction {
         exec("DROP TABLE IF EXISTS \"user\" CASCADE")
 
-        SchemaUtils.drop(CartItem)
+        SchemaUtils.drop(CartItem, UserDocument, Booking)
 
         SchemaUtils.create(
             User,
             Room,
             CartItem,
-            UserDocument
+            UserDocument,
+            Booking
         )
 
         val roomsToInsert = listOf(

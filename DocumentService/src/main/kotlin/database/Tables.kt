@@ -46,3 +46,17 @@ object UserDocument : Table("UserDocument") {
 
     override val primaryKey = PrimaryKey(id)
 }
+
+object Booking : Table("Booking") {
+    val id = integer("id").autoIncrement()
+    val userId = integer("user_id")
+    val roomId = integer("room_id")
+    val document = varchar("document", 50)
+
+    init {
+        foreignKey(userId to User.id, onDelete = ReferenceOption.CASCADE)
+        foreignKey(roomId to Room.id, onDelete = ReferenceOption.CASCADE)
+    }
+
+    override val primaryKey = PrimaryKey(id)
+}

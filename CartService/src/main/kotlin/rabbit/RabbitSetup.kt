@@ -51,6 +51,8 @@ object RabbitSetup {
                 val message = delivery.message.body.decodeToString()
                 val cartItemRequest = Json.decodeFromString<CartItemRequestFromRabbit>(message)
 
+                println(cartItemRequest)
+
                 insertToCart(cartItemRequest)
             }
         } catch (e: Exception) {

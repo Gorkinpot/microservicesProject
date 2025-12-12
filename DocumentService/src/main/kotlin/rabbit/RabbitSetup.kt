@@ -1,8 +1,11 @@
 package com.example.rabbit
 
+import com.example.Service.DocumentRepository
 import com.example.database.UserDocument
+import com.example.dto.request.BookingRequestToRabbit
 import com.example.dto.request.CartItem
 import com.example.dto.response.DocumentExistenceResponse
+import com.sun.org.apache.xerces.internal.util.DOMUtil.getDocument
 import dev.kourier.amqp.BuiltinExchangeType
 import dev.kourier.amqp.channel.AMQPChannel
 import dev.kourier.amqp.connection.AMQPConnection
@@ -16,7 +19,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object RabbitSetup {
     lateinit var connection: AMQPConnection
     lateinit var consumerChannel: AMQPChannel
-    lateinit var producerChannel: AMQPChannel
+    lateinit var producerChannelToCartService: AMQPChannel
+    lateinit var producerChannelToBookingService: AMQPChannel
 
     val config = amqpConfig {
         server {
@@ -30,15 +34,15 @@ object RabbitSetup {
     suspend fun init(coroutineScope: CoroutineScope) {
         connection = createAMQPConnection(coroutineScope, config)
         consumerChannel = connection.openChannel()
-        producerChannel = connection.openChannel()
+        producerChannelToCartService = connection.openChannel()
+        producerChannelToBookingService = connection.openChannel()
 
+        declareCartSetup()
+        declareBookingSetup()
+    }
+
+    suspend fun declareCartSetup() {
         consumerChannel.exchangeDeclare(
-            name = "documentServiceExchange",
-            type = BuiltinExchangeType.TOPIC,
-            durable = true
-        )
-
-        producerChannel.exchangeDeclare(
             name = "documentServiceExchange",
             type = BuiltinExchangeType.TOPIC,
             durable = true
@@ -51,23 +55,50 @@ object RabbitSetup {
             autoDelete = false
         )
 
-        producerChannel.queueDeclare(
+        consumerChannel.queueBind(
+            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
+            exchange = "documentServiceExchange",
+            routingKey = "documents.documentCheck"
+        )
+
+        producerChannelToCartService.queueDeclare(
             name = "PlaceAnOrderKuklinMA-ikbo-07-22",
             durable = true,
             exclusive = false,
             autoDelete = false
         )
 
-        producerChannel.queueBind(
+        producerChannelToCartService.queueBind(
             queue = "PlaceAnOrderKuklinMA-ikbo-07-22",
             exchange = "documentServiceExchange",
             routingKey = "documents.documentExistence"
         )
 
-        consumerChannel.queueBind(
-            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
-            exchange = "documentServiceExchange",
-            routingKey = "documents.documentCheck"
+        producerChannelToCartService.exchangeDeclare(
+            name = "documentServiceExchange",
+            type = BuiltinExchangeType.TOPIC,
+            durable = true
+        )
+    }
+
+    suspend fun declareBookingSetup() {
+        producerChannelToBookingService.exchangeDeclare(
+            name = "bookingServiceExchange",
+            type = BuiltinExchangeType.FANOUT,
+            durable = true
+        )
+
+        producerChannelToBookingService.queueDeclare(
+            name = "PlaceAnOrderShivilovAY-ikbo-07-22",
+            durable = false,
+            exclusive = false,
+            autoDelete = true
+        )
+
+        producerChannelToBookingService.queueBind(
+            queue = "PlaceAnOrderShivilovAY-ikbo-07-22",
+            exchange = "bookingServiceExchange",
+            routingKey = ""
         )
     }
 
@@ -87,24 +118,40 @@ object RabbitSetup {
                 }.singleOrNull() != null
             }
 
-            println(isDocumentExisted)
-
             val json = DocumentExistenceResponse(isDocumentExisted)
             val response = Json.encodeToString(json).toByteArray()
 
-            println(json)
-            println(response)
-
-            producerChannel.basicPublish(
+            producerChannelToCartService.basicPublish(
                 body = response,
                 exchange = "documentServiceExchange",
                 routingKey = "documents.documentExistence"
             )
+
+            if(isDocumentExisted) {
+                val userId = cartItemRequest.userId
+                val roomId = cartItemRequest.roomId
+                val document : String = DocumentRepository.getDocumentByUserId(userId)
+                val message = BookingRequestToRabbit(
+                    userId = userId,
+                    roomId = roomId,
+                    document = document
+                )
+
+                val messageToBooking = Json.encodeToString(message).toByteArray()
+
+                producerChannelToBookingService.basicPublish(
+                    body = messageToBooking,
+                    exchange = "bookingServiceExchange",
+                    routingKey = ""
+                )
+            }
         }
     }
 
     suspend fun stopConnection() {
         connection.close()
         consumerChannel.close()
+        producerChannelToBookingService.close()
+        producerChannelToCartService.close()
     }
 }
