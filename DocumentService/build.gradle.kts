@@ -37,6 +37,16 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-config-yaml")
-    testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    testImplementation(kotlin("test"))
+    testImplementation("io.mockk:mockk:1.14.5")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    testImplementation("org.testcontainers:testcontainers:1.19.1")
+    testImplementation("org.testcontainers:postgresql:1.19.1")
+    testImplementation("org.testcontainers:rabbitmq:1.19.1")
+}
+
+tasks.test{
+    useJUnitPlatform()
 }

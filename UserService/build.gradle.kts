@@ -32,13 +32,21 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
-    testImplementation("io.mockk:mockk:1.13.7")
-
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-cio")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-config-yaml")
-    testImplementation("io.ktor:ktor-server-test-host")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    testImplementation(kotlin("test"))
+    testImplementation("io.mockk:mockk:1.14.5")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    testImplementation("org.testcontainers:testcontainers:1.19.1")
+    testImplementation("org.testcontainers:postgresql:1.19.1")
+    testImplementation("org.testcontainers:rabbitmq:1.19.1")
+}
+
+tasks.test{
+    useJUnitPlatform()
 }

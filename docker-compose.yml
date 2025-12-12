@@ -51,26 +51,6 @@ services:
     ports:
       - "8083:8083"
 
-  catalogservice:
-    image: catalogservice:latest
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    ports:
-      - "8084:8084"
-
-  commentservice:
-    image: commentservice:latest
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    ports:
-      - "8085:8085"
-
   documentservice:
     image: documentservice:latest
     depends_on:
@@ -111,4 +91,23 @@ services:
     ports:
       - "8089:8089"
 
+  catalogservice:
+    image: catalogservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8084:8084"
+
+  commentservice:
+    image: commentservice:latest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8085:8085"
 
