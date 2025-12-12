@@ -33,7 +33,13 @@ object RabbitSetup {
         producerChannel = connection.openChannel()
 
         consumerChannel.exchangeDeclare(
-            name = "PlaceAnOrderExchange",
+            name = "documentServiceExchange",
+            type = BuiltinExchangeType.TOPIC,
+            durable = true
+        )
+
+        producerChannel.exchangeDeclare(
+            name = "documentServiceExchange",
             type = BuiltinExchangeType.TOPIC,
             durable = true
         )
@@ -45,16 +51,23 @@ object RabbitSetup {
             autoDelete = false
         )
 
-        consumerChannel.queueBind(
-            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
-            exchange = "PlaceAnOrderExchange",
-            routingKey = "documents.check"
+        producerChannel.queueDeclare(
+            name = "PlaceAnOrderKuklinMA-ikbo-07-22",
+            durable = true,
+            exclusive = false,
+            autoDelete = false
         )
 
-        producerChannel.exchangeDeclare(
-            name = "PlaceAnOrderExchange",
-            type = BuiltinExchangeType.TOPIC,
-            durable = true
+        producerChannel.queueBind(
+            queue = "PlaceAnOrderKuklinMA-ikbo-07-22",
+            exchange = "documentServiceExchange",
+            routingKey = "documents.documentExistence"
+        )
+
+        consumerChannel.queueBind(
+            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
+            exchange = "documentServiceExchange",
+            routingKey = "documents.documentCheck"
         )
     }
 
@@ -84,7 +97,7 @@ object RabbitSetup {
 
             producerChannel.basicPublish(
                 body = response,
-                exchange = "PlaceAnOrderExchange",
+                exchange = "documentServiceExchange",
                 routingKey = "documents.documentExistence"
             )
         }

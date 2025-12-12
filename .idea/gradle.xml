@@ -22,7 +22,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/BookingService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/BookingService" />
@@ -31,7 +30,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/CartService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/CartService" />
@@ -40,7 +38,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/CatalogService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/CatalogService" />
@@ -49,7 +46,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/CommentService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/CommentService" />
@@ -58,7 +54,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/DocumentService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/DocumentService" />
@@ -67,7 +62,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/NotificationService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/NotificationService" />
@@ -76,7 +70,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/PaymentService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/PaymentService" />
@@ -85,7 +78,6 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/RoomService" />
-        <option name="gradleHome" value="C:\Program Files\Gradle\gradle-8.14.2" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/RoomService" />

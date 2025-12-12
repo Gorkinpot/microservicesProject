@@ -4,11 +4,11 @@ import com.example.rabbit.RabbitSetup
 
 object CartService {
     suspend fun publishToRabbit(message: ByteArray) {
-        val channel = RabbitSetup.producerChannel
+        val channel = RabbitSetup.documentServiceProducerChannel
         channel.basicPublish(
             body = message,
-            exchange = "PlaceAnOrderExchange",
-            routingKey = "documents.check"
+            exchange = "documentServiceExchange",
+            routingKey = "documents.documentCheck"
         )
     }
 }
