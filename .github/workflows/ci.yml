@@ -27,9 +27,7 @@ jobs:
         run: ./gradlew clean build -x test
 
       - name: Build and start dependencies
-        run: |
-          docker-compose up -d db rabbitmq userservice cartservice bookingservice documentservice
+        run: docker-compose up -d db rabbitmq userservice cartservice bookingservice documentservice
 
       - name: Run integration tests in Docker
-        run: |
-          docker-compose run --rm tests
+        run: ./gradlew test
