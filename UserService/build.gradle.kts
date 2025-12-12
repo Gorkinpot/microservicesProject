@@ -32,6 +32,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
+    testImplementation("io.mockk:mockk:1.13.7")
+
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-cio")
     implementation("ch.qos.logback:logback-classic:$logback_version")
