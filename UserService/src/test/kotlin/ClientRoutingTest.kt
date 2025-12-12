@@ -1,17 +1,18 @@
-package com.example
-
 import com.example.Service.UserService
+import com.example.clientRouting
 import com.example.dto.request.RegisterRequest
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.server.testing.testApplication
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 class ClientRoutingTest {
@@ -20,8 +21,11 @@ class ClientRoutingTest {
 
     @Test
     fun testRegisterRoute() = testApplication {
+
+        every { mockUserService.register(any()) } returns Unit
+
         application {
-            clientRouting()
+            clientRouting(mockUserService)
         }
 
         val request = RegisterRequest(
@@ -30,11 +34,9 @@ class ClientRoutingTest {
             password = "12345"
         )
 
-        val jsonRequest = Json.encodeToString(request)
-
         val response = client.post("/api/user/register") {
             contentType(ContentType.Application.Json)
-            setBody(jsonRequest)
+            setBody(Json.encodeToString(request))
         }
 
         assertEquals(HttpStatusCode.Created, response.status)
@@ -42,5 +44,7 @@ class ClientRoutingTest {
             """{"message":"User registered successfully!"}""",
             response.bodyAsText()
         )
+
+        verify { mockUserService.register(any()) }
     }
 }

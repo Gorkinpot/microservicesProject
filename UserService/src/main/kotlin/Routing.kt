@@ -34,12 +34,12 @@ fun Application.roomSelectedEventRouting() {
     }
 }
 
-fun Application.clientRouting(){
+fun Application.clientRouting(userService: UserService) {
     routing {
         post("/api/user/register") {
             try {
                 val request = call.receive<RegisterRequest>()
-                UserService.register(request)
+                userService.register(request)
                 call.respond(HttpStatusCode.Created, RegisterResponse("User registered successfully!"))
             } catch (e : Exception) {
                 println(e.message)
@@ -50,7 +50,7 @@ fun Application.clientRouting(){
             try {
                 val request = call.receive<AuthRequest>()
                 val result = AuthResponse(token = UUID.randomUUID().toString())
-                if (UserService.authorize(request) == true) {
+                if (userService.authorize(request) == true) {
                     call.respond(HttpStatusCode.OK, "User already exists! ${result}")
                 } else {
                     call.respond(HttpStatusCode.NotFound, "User has not authorized!")

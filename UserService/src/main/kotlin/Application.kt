@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.Service.UserService
 import com.example.database.connectDatabase
 import com.example.rabbit.RabbitSetup
 import io.ktor.serialization.kotlinx.json.json
@@ -16,6 +17,7 @@ fun Application.module() {
         json()
     }
 
+    val userService = UserService
     connectDatabase()
 
     environment.monitor.subscribe(ApplicationStarted) { app ->
@@ -31,5 +33,5 @@ fun Application.module() {
     }
 
     roomSelectedEventRouting()
-    clientRouting()
+    clientRouting(userService)
 }

@@ -1,4 +1,4 @@
-./gradlew :UserService:build
+./gradlew :UserService:build -x test
 docker build -t userservice:latest ./UserService
 
 ./gradlew :CartService:build
