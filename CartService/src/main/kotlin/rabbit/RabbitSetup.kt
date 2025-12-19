@@ -87,12 +87,6 @@ object RabbitSetup {
     }
 
     suspend fun declareUserSetup() {
-        userServiceChannel.exchangeDeclare(
-            name = "RoomSelectedExchange",
-            type = BuiltinExchangeType.DIRECT,
-            durable = true
-        )
-
         userServiceChannel.queueDeclare(
             name = "RoomSelectedQueueOnishchukNI-ikbo-07-22",
             durable = false,
@@ -105,32 +99,20 @@ object RabbitSetup {
             exchange = "RoomSelectedExchange",
             routingKey = "exampleKey"
         )
+
+        userServiceChannel.exchangeDeclare(
+            name = "RoomSelectedExchange",
+            type = BuiltinExchangeType.DIRECT,
+            durable = true
+        )
     }
 
     suspend fun declareDocumentSetup() {
-        documentServiceConsumerChannel.exchangeDeclare(
-            name = "documentServiceExchange",
-            type = BuiltinExchangeType.TOPIC,
-            durable = true
-        )
-
-        documentServiceProducerChannel.exchangeDeclare(
-            name = "documentServiceExchange",
-            type = BuiltinExchangeType.TOPIC,
-            durable = true
-        )
-
         documentServiceProducerChannel.queueDeclare(
             name = "PlaceAnOrderKomandinAY-ikbo-07-22",
             durable = true,
             exclusive = false,
             autoDelete = false
-        )
-
-        documentServiceProducerChannel.queueBind(
-            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
-            exchange = "documentServiceExchange",
-            routingKey = "documents.documentCheck"
         )
 
         documentServiceConsumerChannel.queueDeclare(
@@ -140,6 +122,12 @@ object RabbitSetup {
             autoDelete = false
         )
 
+        documentServiceConsumerChannel.exchangeDeclare(
+            name = "documentServiceExchange",
+            type = BuiltinExchangeType.TOPIC,
+            durable = true
+        )
+
         documentServiceConsumerChannel.queueBind(
             queue = "PlaceAnOrderKuklinMA-ikbo-07-22",
             exchange = "documentServiceExchange",
@@ -147,5 +135,16 @@ object RabbitSetup {
         )
 
 
+        documentServiceProducerChannel.exchangeDeclare(
+            name = "documentServiceExchange",
+            type = BuiltinExchangeType.TOPIC,
+            durable = true
+        )
+
+        documentServiceProducerChannel.queueBind(
+            queue = "PlaceAnOrderKomandinAY-ikbo-07-22",
+            exchange = "documentServiceExchange",
+            routingKey = "documents.documentCheck"
+        )
     }
 }

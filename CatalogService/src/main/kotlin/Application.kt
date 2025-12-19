@@ -3,7 +3,7 @@ package com.example
 import io.ktor.server.application.*
 import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.response.respondText
-import io.ktor.server.routing.routing
+import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 
@@ -17,11 +17,11 @@ fun Application.module() {
         registry = prometheusRegistry
     }
 
+    configureRouting()
+    
     routing {
         get("/metrics") {
             call.respondText(prometheusRegistry.scrape())
         }
     }
-
-    configureRouting()
 }

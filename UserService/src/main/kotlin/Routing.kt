@@ -40,6 +40,7 @@ fun Application.clientRouting(userService: UserService) {
             try {
                 val request = call.receive<RegisterRequest>()
                 userService.register(request)
+                println("Usre has been registered")
                 call.respond(HttpStatusCode.Created, RegisterResponse("User registered successfully!"))
             } catch (e : Exception) {
                 println(e.message)
@@ -52,6 +53,7 @@ fun Application.clientRouting(userService: UserService) {
                 val result = AuthResponse(token = UUID.randomUUID().toString())
                 if (userService.authorize(request) == true) {
                     call.respond(HttpStatusCode.OK, "User already exists! ${result}")
+                    println("Usre has been authorized")
                 } else {
                     call.respond(HttpStatusCode.NotFound, "User has not authorized!")
                 }
