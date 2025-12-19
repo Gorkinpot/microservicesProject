@@ -82,17 +82,17 @@ object RabbitSetup {
     }
 
     suspend fun declareBookingSetup() {
-        producerChannelToBookingService.exchangeDeclare(
-            name = "bookingServiceExchange",
-            type = BuiltinExchangeType.FANOUT,
-            durable = true
-        )
-
         producerChannelToBookingService.queueDeclare(
             name = "PlaceAnOrderShivilovAY-ikbo-07-22",
             durable = false,
             exclusive = false,
             autoDelete = true
+        )
+
+        producerChannelToBookingService.exchangeDeclare(
+            name = "bookingServiceExchange",
+            type = BuiltinExchangeType.FANOUT,
+            durable = true
         )
 
         producerChannelToBookingService.queueBind(
