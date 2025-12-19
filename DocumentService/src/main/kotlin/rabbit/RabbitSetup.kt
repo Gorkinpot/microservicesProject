@@ -5,7 +5,6 @@ import com.example.database.UserDocument
 import com.example.dto.request.BookingRequestToRabbit
 import com.example.dto.request.CartItem
 import com.example.dto.response.DocumentExistenceResponse
-import com.sun.org.apache.xerces.internal.util.DOMUtil.getDocument
 import dev.kourier.amqp.BuiltinExchangeType
 import dev.kourier.amqp.channel.AMQPChannel
 import dev.kourier.amqp.connection.AMQPConnection

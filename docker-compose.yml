@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -7,13 +5,13 @@ services:
       - "5672:5672"
       - "15672:15672"
     healthcheck:
-      test: [ "CMD", "rabbitmqctl", "status" ]
-      interval: 3s
-      retries: 10
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
       timeout: 5s
+      retries: 10
 
   db:
-    image: postgres:latest
+    image: postgres:15
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
@@ -21,18 +19,22 @@ services:
     ports:
       - "5432:5432"
 
-  userservice:
-    image: userservice:latest
+  UserService:
+    image: gorkinpot/microservices:userservice
+    build:
+      context: ./UserService
     depends_on:
-      db:
-        condition: service_started
       rabbitmq:
         condition: service_healthy
+      db:
+        condition: service_started
     ports:
       - "8081:8081"
 
-  cartservice:
-    image: cartservice:latest
+  CartService:
+    image: gorkinpot/microservices:cartservice
+    build:
+      context: ./CartService
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -41,8 +43,10 @@ services:
     ports:
       - "8082:8082"
 
-  bookingservice:
-    image: bookingservice:latest
+  BookingService:
+    image: gorkinpot/microservices:bookingservice
+    build:
+      context: ./BookingService
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -51,48 +55,10 @@ services:
     ports:
       - "8083:8083"
 
-  documentservice:
-    image: documentservice:latest
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    ports:
-      - "8086:8086"
-
-  notificationservice:
-    image: notificationservice:latest
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    ports:
-      - "8087:8087"
-
-  paymentservice:
-    image: paymentservice:latest
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    ports:
-      - "8088:8088"
-
-  roomservice:
-    image: roomservice:latest
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      db:
-        condition: service_started
-    ports:
-      - "8089:8089"
-
-  catalogservice:
-    image: catalogservice:latest
+  CatalogService:
+    image: gorkinpot/microservices:catalogservice
+    build:
+      context: ./CatalogService
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -101,8 +67,10 @@ services:
     ports:
       - "8084:8084"
 
-  commentservice:
-    image: commentservice:latest
+  CommentService:
+    image: gorkinpot/microservices:commentservice
+    build:
+      context: ./CommentService
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -111,3 +79,50 @@ services:
     ports:
       - "8085:8085"
 
+  DocumentService:
+    image: gorkinpot/microservices:documentservice
+    build:
+      context: ./DocumentService
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8086:8086"
+
+  NotificationService:
+    image: gorkinpot/microservices:notificationservice
+    build:
+      context: ./NotificationService
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8087:8087"
+
+  PaymentService:
+    image: gorkinpot/microservices:paymentservice
+    build:
+      context: ./PaymentService
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8088:8088"
+
+  RoomService:
+    image: gorkinpot/microservices:roomservice
+    build:
+      context: ./RoomService
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+    ports:
+      - "8089:8089"
