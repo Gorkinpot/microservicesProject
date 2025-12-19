@@ -34,6 +34,8 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-cio")
+    implementation("io.ktor:ktor-server-metrics-micrometer-jvm:3.3.3")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-config-yaml")
